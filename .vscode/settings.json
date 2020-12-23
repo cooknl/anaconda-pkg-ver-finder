@@ -1,4 +1,5 @@
 {
     "python.pythonPath": "C:\\Users\\natha\\Anaconda3\\python.exe",
-    "jupyter.textOutputLimit": 0
+    "jupyter.textOutputLimit": 0,
+    "restructuredtext.languageServer.disabled": true
 }
