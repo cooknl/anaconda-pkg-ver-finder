@@ -1,6 +1,6 @@
 # anaconda-pkg-ver-finder
 
-Answers the age-old question: In which Anaconda Installer is this package available?
+Answers the age-old question: In which Anaconda Installer is this package included?
 
 ## Intent
 
