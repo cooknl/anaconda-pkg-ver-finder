@@ -69,3 +69,36 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 - Host site on AWS
 - ???
 - Profit!!
+
+## Cool finds
+
+### Deep unpacking: <https://treyhunner.com/2018/03/tuple-unpacking-improves-python-code-readability/#Deep_unpacking>
+
+When you have a string `'greenlet0.4.0'` and you apply this regex pattern to it to separate out the package name and the version number, `re.findall(r'([\D]+)(\d[\.\d]+\d)',e)`, you get a tuple of strings nested inside of a list `[('greenlet', '0.4.0')]`.
+
+You can use multiple assignment and `zip()` to get the elements, like this:
+
+```python
+pkg_name, pkg_version = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
+print(pkg_name, pkg_version)
+
+('greenlet',) ('0.4.0',)
+```
+
+But the elements are still "trapped" in individual tuples. Changing the assignment by wrapping the assigned variable names in parentheses doesn't help:
+
+```python
+(pkg_name), (pkg_version) = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
+print(pkg_name, pkg_version)
+
+('greenlet',) ('0.4.0',)
+```
+
+However, if you sneak in a trailing comma, you can tell python that the elements are in a tuple, and you'd like to extract the element from inside the tuple:
+
+```python
+(pkg_name,), (pkg_version,) = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
+print("n:", pkg_name, "; v:", pkg_version)
+
+n: greenlet ; v: 0.4.0
+```

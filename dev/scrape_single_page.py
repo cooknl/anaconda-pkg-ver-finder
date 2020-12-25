@@ -16,7 +16,45 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
     installer['anaconda'] = url_parts[6]
 
     if (installer['anaconda'].split('.')[0] == '1'):
-        pass
+        raw_pkg_list = [li.string for li in s.find('table').find_all('li')]
+        
+        installer['pkgs'] = {}
+        for e in raw_pkg_list:
+            try:
+                if '*' in e:
+                    included = False
+                    e = e[:-2]
+                else:
+                    included = True
+                if ('(' in e):
+                    e = e.split('(')[0].strip()
+                    linux_only = True
+                else:
+                    linux_only = False
+                if ('.' not in e) and ('(' not in e) and (not any(map(str.isdigit, e))):
+                    pkg_name = e
+                    pkg_version = ''
+                if any(map(str.isdigit, e)):
+                    if len(e.split(' ')) > 1:
+                        pkg_name, pkg_version = e.split(' ')
+
+                    else:
+                        (pkg_name,), (pkg_version,) = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
+            except:
+                with open('error_log.txt','a') as f:
+                    f.writelines(installer['url'])
+                    pprint(s.find('table').find_all('li'),f)
+                    pprint(raw_pkg_list,f)
+                return None
+
+            installer['pkgs'][pkg_name] = {}
+            installer['pkgs'][pkg_name]['link'] = '' 
+            installer['pkgs'][pkg_name]['version'] = pkg_version 
+            installer['pkgs'][pkg_name]['summary'] = '' 
+            installer['pkgs'][pkg_name]['included'] = included
+            installer['pkgs'][pkg_name]['linux_only'] = linux_only
+
+        installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
 
     elif (float(installer['anaconda'][:3]) < 2.2):
         
