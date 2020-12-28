@@ -1,0 +1,142 @@
+(function init($) {
+  'use strict';
+
+  var continuum = window.continuum || { };
+
+  // Check for client-only history data in localStorage
+  continuum.history = function history(key) {
+    return localStorage[key];
+  };
+
+  continuum.endsWith = function endsWith(string, searchString, strpos) {
+    var subjectString = string;
+    var position = strpos;
+    var lastIndex = 0;
+
+    if (typeof strpos !== 'number' || !isFinite(strpos)
+            || Math.floor(strpos) !== strpos || strpos > subjectString.length) {
+      position = subjectString.length;
+    }
+    position -= searchString.length;
+    lastIndex = subjectString.lastIndexOf(searchString, position);
+
+    return lastIndex !== -1 && lastIndex === position;
+  };
+
+  continuum.stickySideBar = function stickySideBar() {
+    var $stick = $('aside');
+    var $footer = $('footer');
+    var offtop = $stick.offset().top;
+    var menuHeight = $stick.find('.pane-node-field-doc-navigation-menu').height();
+    var currentPage = location.pathname.substring(location.pathname.lastIndexOf("/") + 1);
+
+    $(window).scroll(function () {
+      var scrtop = $(window).scrollTop();
+      var offbtm = $footer.offset().top - $(window).height();
+
+      if (scrtop > offtop && $stick.hasClass('natural')) {
+        $stick.removeClass('natural').addClass('fixed').css('top', 0);
+      }
+      if (offtop > scrtop && $stick.hasClass('fixed')) {
+        $stick.removeClass('fixed').addClass('natural').css('top', 'auto');
+      }
+      if (offbtm > scrtop && $stick.hasClass('bottom')) {
+        $stick.removeClass('bottom').addClass('fixed').css('top', 0);
+      }
+    });
+  };
+
+  $(window).on('load', function () {
+
+    if ($(window).width() > 640) {
+      // sticky sidebar
+      continuum.stickySideBar();
+    }
+
+  });
+
+  $(document).ready(function onReady() {
+
+    // toggle left menu
+    $('.breadcrumb-wrapper .toggle-sidebar').click(function toggleLeftMenu() {
+      if ($(window).width() > 799) {
+        $('body').toggleClass('sidebar-collapsed');
+        $('body').removeClass('sidebar-expanded');
+      } else {
+        $('body').toggleClass('sidebar-expanded');
+        $('body').removeClass('sidebar-collapsed');
+      }
+    });
+
+    $('.layout-two-col__second .sidebar-close').click(function () {
+      $('body').removeClass('sidebar-expanded');
+      $('body').removeClass('sidebar-collapsed');
+    });
+
+    // smooth anchor scroll
+    $('a[href*="#"]:not([href="#"])').not('.tab-title > a').click(function smoothAScroll() {
+      var target = $(this.hash);
+
+      if (location.pathname.replace(/^\//, '') === this.pathname.replace(/^\//, '')
+              && location.hostname === this.hostname) {
+        target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+        if (target.length) {
+          $('html, body').animate({
+            scrollTop: target.offset().top
+          }, 1000);
+        }
+      }
+    });
+
+    // scroll pane for syntax blocks
+    $('.highlight').addClass('horizontal-only scroll-pane');
+
+    $('.scroll-pane').jScrollPane({ autoReinitialise: true });
+    $('.scroll-pane').each(
+            function () {
+              var api = $(this).data('jsp');
+              var throttleTimeout;
+
+              $(this).jScrollPane({ autoReinitialise: true });
+
+              $(window).bind(
+                      'resize',
+                      function () {
+                        if (!throttleTimeout) {
+                          throttleTimeout = setTimeout(
+                                  function () {
+                                    api.reinitialise();
+                                    throttleTimeout = null;
+                                  }
+                          );
+                        }
+                      }
+              );
+            }
+    );
+
+    // temp menu hack: remove dashes and add arrows for menus with dashes only
+    $('.pane-node-field-doc-navigation-menu ul > li').each(function (e) {
+      var nlink = $(this).find('> a');
+      // treat section links
+      if (nlink.html() === 'Anaconda Platform'
+              || nlink.html() === 'Open source incubated projects') {
+        $(this).removeClass('toctree-l1');
+        $(this).addClass('menu-bold');
+        if (nlink.html() === 'Anaconda Platform') {
+          $(this).html('<span class="nolink">Anaconda Platform</span>');
+          nlink = false;
+        }
+      }
+
+      // remove dashes
+      if (nlink && nlink.html().indexOf('\u2013 ') === 0) {
+        nlink.html(nlink.html().substring(2));
+      }
+
+      if (nlink && (nlink.html() === 'Welcome' || nlink.hasClass('url-external'))) {
+        $(this).removeClass('toctree-l1');
+      }
+    });
+  });
+})(jQuery);

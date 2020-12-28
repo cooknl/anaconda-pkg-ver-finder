@@ -17,11 +17,11 @@ if not pathlib.Path(json_file).is_file():
     installer_url_list = build_installer_urls_list()
 
     print('building dictionary')
-    installer_dicts = build_full_dictionary(installer_url_list)
+    installers_dicts = build_full_dictionary(installer_url_list)
 
     print('saving to file')
     with open(json_file, 'w', encoding='utf-8') as f:
-        json.dump(installer_dicts, f, ensure_ascii=False, indent=4)
+        json.dump(installers_dicts, f, ensure_ascii=False, indent=4)
 
 else: 
     print('is file')

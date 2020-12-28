@@ -40,6 +40,8 @@ Sites:
 
 - Parse table and pull package names, etc into a dictionary that includes the anaconda version and python version
 - Use the anaconda+python+OS from the URL as a unique ID for the package list
+- Anaconda 1.x rando tables can be queried by just pulling all `<li>` from the table
+  - 1.3+ tables use different format, and an `<em>` tag messes up using just Tag.string attribute, so used Tag.contents instead, which still requires some understanding of how contents are nested in a list
 
 ### Create roll-up dict of individual package list dicts and save as JSON file
 
