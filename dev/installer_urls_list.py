@@ -15,7 +15,14 @@ def get_list_of_oldpkgs(url='https://docs.anaconda.com/anaconda/packages/oldpkgl
     return installer_url_list
 
 def get_list_of_current_pkgs(url='https://docs.anaconda.com/anaconda/packages/pkg-docs/'):
-    return []
+
+    r = requests.get(url)
+    s = BeautifulSoup(r.content, features="lxml")
+
+    installer_url_list = []
+    for item in s.find('table').find_all('a'):
+        installer_url_list.append(urljoin(url,item.get('href')))   
+    return installer_url_list
 
 def build_installer_urls_list():
     installer_urls_list = []

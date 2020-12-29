@@ -12,10 +12,13 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
     s = BeautifulSoup(r.content, features="lxml")
 
     url_parts = url.split('/')
- 
-    installer['anaconda'] = url_parts[6]
 
-    if (float(installer['anaconda'][:3]) < 2):
+    if url_parts[5] == 'old-pkg-lists':
+        installer['anaconda'] = url_parts[6]
+    else:
+        installer['anaconda'] = 'current'
+
+    if (installer['anaconda'] != 'current') and (float(installer['anaconda'][:3]) < 2):
         installer['pkgs'] = {}
 
         raw_pkg_list = [li.contents for li in s.find('table').find_all('li')]
@@ -78,94 +81,8 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
 
         installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
 
-    elif (float(installer['anaconda'][:3]) <= 1.3):
-        raw_pkg_list = [li.string for li in s.find('table').find_all('li')]
+    elif (installer['anaconda'] != 'current') and (float(installer['anaconda'][:3]) < 2.2):
         
-        installer['pkgs'] = {}
-        for e in raw_pkg_list:
-            try:
-                if '*' in e:
-                    included = False
-                    e = e[:-2]
-                else:
-                    included = True
-                if ('(' in e):
-                    e = e.split('(')[0].strip()
-                    linux_only = True
-                else:
-                    linux_only = False
-                if ('.' not in e) and ('(' not in e) and (not any(map(str.isdigit, e))):
-                    pkg_name = e
-                    pkg_version = ''
-                if any(map(str.isdigit, e)):
-                    if len(e.split(' ')) > 1:
-                        pkg_name, pkg_version = e.split(' ')
-
-                    else:
-                        (pkg_name,), (pkg_version,) = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
-            except:
-                with open('error_log.txt','a') as f:
-                    f.writelines(installer['url'])
-                    pprint(s.find('table').find_all('li'),f)
-                    pprint(raw_pkg_list,f)
-                return None
-
-            installer['pkgs'][pkg_name] = {}
-            installer['pkgs'][pkg_name]['link'] = '' 
-            installer['pkgs'][pkg_name]['version'] = pkg_version 
-            installer['pkgs'][pkg_name]['summary'] = '' 
-            installer['pkgs'][pkg_name]['included'] = included
-            installer['pkgs'][pkg_name]['linux_only'] = linux_only
-
-        installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
-
-    elif (float(installer['anaconda'][:3]) <= 1.9):
-        raw_pkg_list = [li.string for li in s.find('table').find_all('li')]
-        
-        installer['pkgs'] = {}
-        for e in raw_pkg_list:
-            try:
-                if '*' in e:
-                    included = False
-                    e = e[:-2]
-                else:
-                    included = True
-                if ('(' in e):
-                    e = e.split('(')[0].strip()
-                    linux_only = True
-                else:
-                    linux_only = False
-                if ('.' not in e) and ('(' not in e) and (not any(map(str.isdigit, e))):
-                    pkg_name = e
-                    pkg_version = ''
-                if any(map(str.isdigit, e)):
-                    if len(e.split(' ')) > 1:
-                        pkg_name, pkg_version = e.split(' ')
-
-                    else:
-                        (pkg_name,), (pkg_version,) = zip(*re.findall(r'([\D]+)(\d[\.\d]+\d)',e))
-            except:
-                with open('error_log.txt','a') as f:
-                    f.writelines(installer['url'])
-                    pprint(s.find('table').find_all('li'),f)
-                    pprint(raw_pkg_list,f)
-                return None
-
-            installer['pkgs'][pkg_name] = {}
-            installer['pkgs'][pkg_name]['link'] = '' 
-            installer['pkgs'][pkg_name]['version'] = pkg_version 
-            installer['pkgs'][pkg_name]['summary'] = '' 
-            installer['pkgs'][pkg_name]['included'] = included
-            installer['pkgs'][pkg_name]['linux_only'] = linux_only
-
-        installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
-
-    
-
-    elif (float(installer['anaconda'][:3]) < 2.2):
-        
-        installer['python'] = s.find('div', class_='section').p.string.split(' ')[-1]
-
         pkg_table = s.find('table', class_='docutils', border='1')
 
         installer['pkgs'] = {}
@@ -180,8 +97,10 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
                 installer['pkgs'][pkg_name]['included'] = True
             else:
                 installer['pkgs'][pkg_name]['included'] = False
+
+        installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
+
     else:
-        installer['python'] = s.find('div', class_='section').p.string.split(' ')[-1]
 
         pkg_table = s.find('table', class_='docutils', border='1')
 
@@ -198,6 +117,8 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
             else:
                 installer['pkgs'][pkg_name]['included'] = False
 
+        installer['python'] = installer['pkgs']['python']['version'] # get from python pkg.version
+
     # # installer_includes = installer.copy()
     # # installer_includes['pkgs'] = dict(filter(lambda elem: elem[1]['included'], installer['pkgs'].items()))
 
@@ -209,4 +130,4 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
     return installer
 
 if __name__ == '__main__':
-    pprint(get_installer_dictionary('https://docs.anaconda.com/anaconda/packages/old-pkg-lists/1.3/'))
+    pprint(get_installer_dictionary('https://docs.anaconda.com/anaconda/packages/py3.7_win-64/'))

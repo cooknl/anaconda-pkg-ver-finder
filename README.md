@@ -35,6 +35,7 @@ Sites:
 ### Create list of URLS of package lists
 
 - Old packages: just use `requests` and `bs4` to pull from the unordered list
+- Current packages: use `<a>` tags in the table to get URLs
 
 ### Given a URL create a dict of desired content
 
@@ -63,8 +64,6 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 
 ### TODO
 
-- Old packages v1.x: parse rando table
-- New packages: pull from the "wide" table
 - Cross-reference to list of actual installers
 - Save package dictionary to SQLite database
 - Create Django front-end to interact with database
