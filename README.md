@@ -20,6 +20,7 @@ Provided a package name, return the versions of the Anaconda Installer that incl
 Sites:
 
 - Old installers: <https://docs.anaconda.com/anaconda/packages/oldpkglists/>
+  - All of the old packages URLS are available in an unordered list, except those for 2020.04 and 2020.07, which is just a block of text.
   - Anaconda v1.x: `https://docs.anaconda.com/anaconda/packages/old-pkg-lists/[anaconda_version]`
         - Rando table of packages
     - Anaconda v2.x - v4.x: `https://docs.anaconda.com/anaconda/packages/old-pkg-lists/[anaconda_version]/[python_version]/`
@@ -43,6 +44,19 @@ Sites:
 - Use the anaconda+python+OS from the URL as a unique ID for the package list
 - Anaconda 1.x rando tables can be queried by just pulling all `<li>` from the table
   - 1.3+ tables use different format, and an `<em>` tag messes up using just Tag.string attribute, so used Tag.contents instead, which still requires some understanding of how contents are nested in a list
+- 2020.04 were all 404, so got to use the python 3.8 walrus operator for the first time
+
+```python
+r = requests.get(url)
+
+if r.status_code == 404:
+    return None
+```
+
+```python
+if (installer_dict := get_installer_dictionary(installer_url)):
+    installer_dicts[installer_id] = installer_dict
+```
 
 ### Create roll-up dict of individual package list dicts and save as JSON file
 

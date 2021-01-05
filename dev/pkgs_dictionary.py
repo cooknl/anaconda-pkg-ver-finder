@@ -1,6 +1,5 @@
 import json
 import pathlib
-from pprint import pprint
 from collections import defaultdict
 
 def installers2pkgs_dictionary(installers_dicts):
