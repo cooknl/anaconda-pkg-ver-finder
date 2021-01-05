@@ -62,10 +62,21 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 
 ### Save package dictionary to JSON
 
+### Un-nest package dictionary and save as single-table SQLite database file
+
+For a "cleaner" database with less redundancy, a three-table architecture would likely be better suited.
+
+- Table of packages
+- Table of installers
+- Link table combining packages and installers and a few other pieces of information (notably package and python version numbers)
+
+However, for this simple use case, without massive datasets, a single table is sufficient.
+
+Thanks to <https://devopsheaven.com/sqlite/databases/json/python/api/2017/10/11/sqlite-json-data-python.html>
+
 ### TODO
 
 - Cross-reference to list of actual installers
-- Save package dictionary to SQLite database
 - Create Django front-end to interact with database
 - Host site on AWS
 - ???
