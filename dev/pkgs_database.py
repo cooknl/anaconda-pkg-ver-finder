@@ -9,7 +9,8 @@ def pkgs_dictionary2database(pkgs_dicts, pkgs_db_file):
 
     c.execute(f"""
             CREATE TABLE IF NOT EXISTS 'packages'
-            (pkg_name text,
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             pkg_name text,
              pkg_url text,
              pkg_summary text,
              installer_name text,
@@ -35,7 +36,16 @@ def pkgs_dictionary2database(pkgs_dicts, pkgs_db_file):
                             pkgs_dicts[pkg]['installers'][installer]['pkg_version'],
                             pkgs_dicts[pkg]['installers'][installer]['pkg_included'],
                             )
-            query = "INSERT INTO packages VALUES ( ?,?,?, ?,?,?, ?,?,? )"
+            query = """INSERT INTO  packages (pkg_name,
+                                             pkg_url,
+                                             pkg_summary,
+                                             installer_name,
+                                             installer_url,
+                                             anaconda_ver,
+                                             python_ver,
+                                             pkg_ver,
+                                             pkg_included) 
+                                    VALUES ( ?,?,?, ?,?,?, ?,?,? )"""
             c.execute(query, parameters)
     conn.commit()
 
