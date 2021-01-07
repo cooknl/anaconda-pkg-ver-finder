@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class Packages(models.Model):
+class Package(models.Model):
     id = models.IntegerField(primary_key=True)
     pkg_name = models.TextField(blank=True, null=True)
     pkg_url = models.TextField(blank=True, null=True)
