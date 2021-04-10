@@ -5,12 +5,14 @@ from urllib.parse import urlparse
 def build_full_dictionary(installers_url_list):
     installer_dicts = {}
     for installer_url in installers_url_list:
+        print("Parsing", installer_url)
         split_path = urlparse(installer_url).path.split('/')
         if split_path[3] == 'old-pkg-lists':
             installer_id = '_'.join(s for s in split_path[4:] if s)
         else:
             installer_id = 'current_' + '_'.join(s for s in split_path[3:] if s)
-        installer_dicts[installer_id] = get_installer_dictionary(installer_url)
+        if (installer_dict := get_installer_dictionary(installer_url)):
+            installer_dicts[installer_id] = installer_dict
     return installer_dicts
 
 if __name__ == '__main__':

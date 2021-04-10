@@ -9,6 +9,10 @@ def get_installer_dictionary(url='https://docs.anaconda.com/anaconda/packages/ol
     installer['url'] = url
 
     r = requests.get(url)
+
+    if r.status_code == 404:
+        return None
+
     s = BeautifulSoup(r.content, features="lxml")
 
     url_parts = url.split('/')

@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import requests
 from urllib.parse import urljoin
 from pprint import pprint
+import pathlib
+
 
 def get_list_of_oldpkgs(url='https://docs.anaconda.com/anaconda/packages/oldpkglists/'):
 
@@ -11,6 +13,16 @@ def get_list_of_oldpkgs(url='https://docs.anaconda.com/anaconda/packages/oldpkgl
     installer_url_list = []
     for item in s.find('div',class_='toctree-wrapper compound').ul.find_all('li'):
         installer_url_list.append(urljoin(url,item.a.get('href')))
+
+    # as of 2021-01-04, the 2020.04 and 2020.07 urls are not "pretty" just a bunch of space-separated stubs
+    old_pkg_04_07_filename = 'old_pkg_list_2020.07.txt'
+    old_pkg_04_07_file = pathlib.PurePath(__file__).parents[0].joinpath(pathlib.PurePath(old_pkg_04_07_filename))
+
+    with open(old_pkg_04_07_file, 'r') as f:
+        list_for_2020_07 = ['../' + u for u in f.readline().split(' ')]
+
+    for item in list_for_2020_07:
+        installer_url_list.append(urljoin(url,item))
     
     return installer_url_list
 

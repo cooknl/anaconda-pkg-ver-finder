@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "C:\\Users\\natha\\Anaconda3\\python.exe",
+    "python.pythonPath": "/home/nathan/miniconda3/bin/python",
     "jupyter.textOutputLimit": 0,
     "restructuredtext.languageServer.disabled": true
 }

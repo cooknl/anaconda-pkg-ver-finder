@@ -58,6 +58,7 @@ Dict includes
 Sites:
 
 - Old installers: <https://docs.anaconda.com/anaconda/packages/oldpkglists/>
+  - All of the old packages URLS are available in an unordered list, except those for 2020.04 and 2020.07, which is just a block of text.
   - Anaconda v1.x: `https://docs.anaconda.com/anaconda/packages/old-pkg-lists/[anaconda_version]`
         - Rando table of packages
     - Anaconda v2.x - v4.x: `https://docs.anaconda.com/anaconda/packages/old-pkg-lists/[anaconda_version]/[python_version]/`
@@ -97,7 +98,6 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 ### TODO
 
 - Cross-reference to list of actual installers
-- Save package dictionary to SQLite database
 - Create Django front-end to interact with database
 - Host site on AWS
 - ???
