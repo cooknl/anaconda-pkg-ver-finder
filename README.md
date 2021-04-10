@@ -71,6 +71,20 @@ Sites:
 - Archive of actual installers: <https://repo.anaconda.com/archive/>
   - Tidy table of installers
 
+- 2020.04 were all 404, so got to use the python 3.8 walrus operator for the first time
+
+```python
+r = requests.get(url)
+
+if r.status_code == 404:
+    return None
+```
+
+```python
+if (installer_dict := get_installer_dictionary(installer_url)):
+    installer_dicts[installer_id] = installer_dict
+```
+
 ### Save installers dict as JSON file
 
 `main.py` --> `installers.json`
@@ -94,6 +108,18 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 ### Save package dictionary to JSON
 
 `main.py` --> `pkgs.json`
+
+### Un-nest package dictionary and save as single-table SQLite database file
+
+For a "cleaner" database with less redundancy, a three-table architecture would likely be better suited.
+
+- Table of packages
+- Table of installers
+- Link table combining packages and installers and a few other pieces of information (notably package and python version numbers)
+
+However, for this simple use case, without massive datasets, a single table is sufficient.
+
+Thanks to <https://devopsheaven.com/sqlite/databases/json/python/api/2017/10/11/sqlite-json-data-python.html>
 
 ### TODO
 
