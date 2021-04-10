@@ -37,5 +37,3 @@ if __name__ == '__main__':
     pprint(get_list_of_oldpkgs())
     pprint(get_list_of_current_pkgs())
     pprint(build_installer_urls_list())
-
-

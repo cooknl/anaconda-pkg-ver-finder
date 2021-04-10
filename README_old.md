@@ -8,7 +8,12 @@ Provided a package name, return the versions of the Anaconda Installer that incl
 
 ## Process
 
-### Scrape Anaconda website pages
+`dev > main.py` runs the entire process
+
+### Scrape Anaconda websites with "metalists" of URLs for pages with package lists
+
+`dev > installer_urls_list.y > get_list_of_oldpkgs()`
+`dev > installer_urls_list.y > get_list_of_current_pkgs()`
 
 - Download website with `requests`
 - Parse HTML with `beautifulsoup4`
@@ -16,6 +21,39 @@ Provided a package name, return the versions of the Anaconda Installer that incl
 - Identify pages and tags that have the desired content
   - Identifying pages varies with old v current packages
     - Identifying tags varies with Anaconda version (1.x, 2.0-2.2, 2.3+)
+
+- Old packages: just use `requests` and `bs4` to pull from the unordered list `li`
+
+- Current packages: use `<a>` tags in the table to get URLs
+
+### Create full list of URLS of package lists
+
+`dev > installer_urls_list.py > build_installer_urls_list()`
+
+### Create roll-up dict of individual package list dicts
+
+`dev > installers_dictionary.py > build_full_dictionary()`
+
+#### Given a URL of a single page create a dict of installer packages metadata
+
+`dev > scrape_single_page > get_installer_dictionary`
+
+Dict includes
+
+- anaconda version
+- python version
+- dict of packages
+  - package name
+  - package version
+  - package included in installer file (if not, then separate download required)
+  - package OS's supported
+  - package link
+  - package summary description
+
+- Parse table and pull package names, etc into a dictionary that includes the anaconda version and python version
+- Use the anaconda+python+OS from the URL as a unique ID for the package list
+- Anaconda 1.x rando tables can be queried by just pulling all `<li>` from the table
+  - 1.3+ tables use different format, and an `<em>` tag messes up using just Tag.string attribute, so used Tag.contents instead, which still requires some understanding of how contents are nested in a list
 
 Sites:
 
@@ -32,24 +70,16 @@ Sites:
 - Archive of actual installers: <https://repo.anaconda.com/archive/>
   - Tidy table of installers
 
-### Create list of URLS of package lists
+### Save installers dict as JSON file
 
-- Old packages: just use `requests` and `bs4` to pull from the unordered list
-- Current packages: use `<a>` tags in the table to get URLs
-
-### Given a URL create a dict of desired content
-
-- Parse table and pull package names, etc into a dictionary that includes the anaconda version and python version
-- Use the anaconda+python+OS from the URL as a unique ID for the package list
-- Anaconda 1.x rando tables can be queried by just pulling all `<li>` from the table
-  - 1.3+ tables use different format, and an `<em>` tag messes up using just Tag.string attribute, so used Tag.contents instead, which still requires some understanding of how contents are nested in a list
-
-### Create roll-up dict of individual package list dicts and save as JSON file
+`main.py` --> `installers.json`
 
 - `json.dump()` to save to file
 - `json.load()` to read from file
 
 ### Transform installer-primary dict of dicts to a package-primary dict of dicts
+
+`dev > pkgs_dictionary.py > installers2pkgs_dictionary()`
 
 - Build set of all packages mentioned in any of the lists
 - Use package name as primary key for the dictionary of dictionaries
@@ -61,6 +91,8 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 ```
 
 ### Save package dictionary to JSON
+
+`main.py` --> `pkgs.json`
 
 ### TODO
 
