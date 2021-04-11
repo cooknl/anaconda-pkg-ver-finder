@@ -6,11 +6,23 @@ Answers the age-old question: In which Anaconda Installer is this package includ
 
 Provided a package name, return the versions of the Anaconda Installer that include the package
 
-## Process
+## Populate Database
 
-`dev > main.py` runs the entire process
+`dev > populate_database.py` runs the entire process
 
-### Scrape Anaconda websites with "metalists" of URLs for pages with package lists
+### Check if files are missing
+
+- `installers_json_filename = 'installers.json'`
+- `pkgs_json_filename = 'pkgs.json'`
+- `pkgs_db_filename = 'pkgs.db'`
+
+### If installers JSON is missing
+
+#### Create full list of URLS of package lists
+
+`dev > installer_urls_list.py > build_installer_urls_list()`
+
+##### Scrape Anaconda websites with "metalists" of URLs for pages with package lists
 
 `dev > installer_urls_list.y > get_list_of_oldpkgs()`
 `dev > installer_urls_list.y > get_list_of_current_pkgs()`
@@ -25,10 +37,6 @@ Provided a package name, return the versions of the Anaconda Installer that incl
 - Old packages: just use `requests` and `bs4` to pull from the unordered list `li`
 
 - Current packages: use `<a>` tags in the table to get URLs
-
-### Create full list of URLS of package lists
-
-`dev > installer_urls_list.py > build_installer_urls_list()`
 
 ### Create roll-up dict of individual package list dicts
 
@@ -85,14 +93,13 @@ if (installer_dict := get_installer_dictionary(installer_url)):
     installer_dicts[installer_id] = installer_dict
 ```
 
-### Save installers dict as JSON file
-
-`main.py` --> `installers.json`
+#### Save installers dict as JSON file
 
 - `json.dump()` to save to file
 - `json.load()` to read from file
 
-### Transform installer-primary dict of dicts to a package-primary dict of dicts
+### If packages JSON is missing
+#### Transform installer-primary dict of dicts to a package-primary dict of dicts
 
 `dev > pkgs_dictionary.py > installers2pkgs_dictionary()`
 
@@ -105,11 +112,13 @@ if (installer_dict := get_installer_dictionary(installer_url)):
 pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p in all_pkg_set}
 ```
 
-### Save package dictionary to JSON
+#### Save package dictionary to JSON
 
-`main.py` --> `pkgs.json`
+`pkgs.json`
 
-### Un-nest package dictionary and save as single-table SQLite database file
+### If packages database is missing
+
+#### Un-nest package dictionary and save as single-table SQLite database file
 
 For a "cleaner" database with less redundancy, a three-table architecture would likely be better suited.
 
@@ -121,7 +130,7 @@ However, for this simple use case, without massive datasets, a single table is s
 
 Thanks to <https://devopsheaven.com/sqlite/databases/json/python/api/2017/10/11/sqlite-json-data-python.html>
 
-### TODO
+## TODO
 
 - Cross-reference to list of actual installers
 - Create Django front-end to interact with database
