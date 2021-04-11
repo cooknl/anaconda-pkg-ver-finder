@@ -120,6 +120,8 @@ pkgs_dict = {p: defaultdict(lambda: defaultdict(lambda: defaultdict(str))) for p
 
 #### Un-nest package dictionary and save as single-table SQLite database file
 
+`dev > pkgs_dictionary.py > installers2pkgs_dictionary()`
+
 For a "cleaner" database with less redundancy, a three-table architecture would likely be better suited.
 
 - Table of packages
@@ -130,10 +132,55 @@ However, for this simple use case, without massive datasets, a single table is s
 
 Thanks to <https://devopsheaven.com/sqlite/databases/json/python/api/2017/10/11/sqlite-json-data-python.html>
 
+
+## Create Django front-end to interact with database
+
+https://docs.djangoproject.com/en/3.2/intro/tutorial01/
+
+```PowerShell
+conda install django
+python -m django --version
+django-admin startproject pkg_finder
+cd pkg_finder
+python manage.py runserver
+python manage.py startapp browse_pkgs
+```
+
+### Add responses to `browse_pkgs/views.py`
+
+```python
+from django.http import HttpResponse
+
+
+def index(request):
+    return HttpResponse("Hello, world. You're at the browse_pkgs index.")
+```
+### Add `pkg_finder/browse_pkgs/urls.py` to map app URL to app View
+
+```python
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+```
+### Add `pkg_finder/urls.py` to map site URL to app URL
+
+```python
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('polls/', include('polls.urls')),
+    path('admin/', admin.site.urls),
+]
+```
+
 ## TODO
 
 - Cross-reference to list of actual installers
-- Create Django front-end to interact with database
 - Host site on AWS
 - ???
 - Profit!!
